@@ -37,3 +37,4 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+input/data-derived/bcm_raster-to-point_long.csv

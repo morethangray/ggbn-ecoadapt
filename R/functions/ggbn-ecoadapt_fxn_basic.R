@@ -68,6 +68,7 @@ path_tables <- here(path_report, "tables")
 
 # ========================================================== -----
 # DEFINE FUNCTIONS ----
+# Basic functions ----
 #   %nin% ----
 "%nin%" <- Negate("%in%")
 #   spread_n ----
@@ -117,4 +118,17 @@ fxn_kable <- function(df){
                   fixed_thead = T)
 }
 
+# GGBN-EcoAdapt functions ----
+# ========================================================== -----
+# CREATE HELPERS ----
+#   lookup_variables  -----
+lookup_variables <- 
+  read_csv(here(path_lookup, "bcm-variables.csv")) %>%
+  select(column_name, 
+         # n_column, 
+         metric, 
+         variable,
+         time_end, 
+         scenario) %>%
+  unite(scenario_variable, c(scenario, variable), remove = FALSE) 
 # ========================================================== -----

@@ -11,17 +11,7 @@ source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
 
 # ========================================================== -----
 # CREATE DATA FRAMES ----
-#   lookup_variables  -----
-lookup_variables <- 
-  read_csv(here(path_lookup, "bcm-variables.csv")) %>%
-  select(column_name, 
-         # n_column, 
-         metric, 
-         variable,
-         time_end, 
-         scenario)
-
-#   bcm_raw ----
+# Read raw data ----
 # Values by point, within study area extent 
 # Derived from rasters at 270m resolution 
 bcm_raw <- 
@@ -40,29 +30,32 @@ bcm_raw <-
          variable, 
          time_end, 
          scenario, 
-         column_name,
-         value)  
+         scenario_variable,
+         value) 
+  
+# NOTE: Some cells are empty 
+# Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
+#   ccsm4_cwda
+#   ccsm4_runrch
+#   cnrm_runrch
+#   cnrmd_cwda
+#   hadg_cwda
+#   hadg_runrch
 
-#   bcm_raw_wide: Reduce file size and write csv ----
-bcm_raw_wide <- 
-  bcm_raw %>%
-  unite(scenario_variable, c(scenario, variable)) %>%
+# Reduce file size and write csv ----
+bcm_raw %>%
   select(point_id, 
          scenario_variable, 
          value) %>%
-spread(scenario_variable, value) 
-
-bcm_raw_wide %>%
+  spread(scenario_variable, value) %>%
   write_csv(here(path_derived, "bcm_raster-to-point_wide.csv"))
-
-# NOTE: Some bcm_raw cells are empty ---- 
-# Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
-# ccsm4_cwda
-# ccsm4_runrch
-# cnrm_runrch
-# cnrmd_cwda
-# hadg_cwda
-# hadg_runrch
+# Read wide csv and reshape to long ----
+#   bcm_tidy  ----
+bcm_tidy <- 
+  read_csv(here(path_derived, "bcm_raster-to-point_wide.csv")) %>%
+  gather(scenario_variable, value, 2:27) %>%
+  # Annotate with metric, variable, subset, time interval, bcm scenario
+  left_join(lookup_variables, "scenario_variable") 
 
 # ========================================================== -----
 # EVALUATE FUTURE CHANGE  ----
@@ -72,7 +65,7 @@ bcm_raw_wide %>%
 #   This finds the minimum among the three future scenarios 
 #   Finding the "minimum" does not change the historic data; there is only one value per point
 bcm_future_change <- 
-  bcm_raw %>%
+  bcm_tidy %>%
   group_by(metric,
            variable, 
            time_end, # Separates historic from future values
