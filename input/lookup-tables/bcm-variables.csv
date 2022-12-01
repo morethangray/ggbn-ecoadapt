@@ -1,0 +1,27 @@
+﻿column_name,time_end,scenario,metric,variable,variable_prefix,variable_suffix,n_column,comments
+ccsm4_avetemp,future,ccsm4,temp,tmp_avg,tmp,avg,3,
+ccsm4_cwda,future,ccsm4,hydr,cwd_avg,cwd,avg,4,why is there an a at the end of the name
+ccsm4_pptdjf,future,ccsm4,hydr,ppt_djf,ppt,djf,5,
+ccsm4_pptjja,future,ccsm4,hydr,ppt_jja,ppt,jja,6,
+ccsm4_runrch,future,ccsm4,hydr,rrr_avg,rnr,avg,7,recharge and runoff
+ccsm4_tmndjf,future,ccsm4,temp,tmn_djf,tmn,djf,8,
+ccsm4_tmxjja,future,ccsm4,temp,tmx_jja,tmx,jja,9,
+cnrm_avetemp,future,cnrm,temp,tmp_avg,tmp,avg,10,
+cnrm_pptdjf,future,cnrm,hydr,ppt_djf,ppt,djf,11,
+cnrm_pptjja,future,cnrm,hydr,ppt_jja,ppt,jja,12,
+cnrm_runrch,future,cnrm,hydr,rrr_avg,rnr,avg,13,recharge and runoff
+cnrm_tmndjfc,future,cnrm,temp,tmn_djf,tmn,djf,14,why is there a c at the end of the name
+cnrm_tmxjjac,future,cnrm,temp,tmx_jja,tmx,jja,15,why is there a c at the end of the name
+cnrmd_cwda,future,cnrm,hydr,cwd_avg,cwd,avg,16,why is there an a at the end of the name
+hadg_cwda,future,hadg,hydr,cwd_avg,cwd,avg,17,why is there an a at the end of the name
+hadg_pptdjf,future,hadg,hydr,ppt_djf,ppt,djf,18,
+hadg_pptjja,future,hadg,hydr,ppt_jja,ppt,jja,19,
+hadg_runrch,future,hadg,hydr,rrr_avg,rnr,avg,20,recharge and runoff
+hadg_tmndjf,future,hadg,temp,tmn_djf,tmn,djf,21,
+hist_avetmp,historic,hist,temp,tmp_avg,tmp,avg,22,
+hist_cwda,historic,hist,hydr,cwd_avg,cwd,avg,23,why is there an a at the end of the name
+hist_pptdjf,historic,hist,hydr,ppt_djf,ppt,djf,24,
+hist_pptjja,historic,hist,hydr,ppt_jja,ppt,jja,25,
+hist_runrch,historic,hist,hydr,rrr_avg,rnr,avg,26,recharge and runoff
+hist_tmndjf,historic,hist,temp,tmn_djf,tmn,djf,27,
+hist_tmxjja,historic,hist,temp,tmx_jja,tmx,jja,28,
