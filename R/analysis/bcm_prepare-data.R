@@ -41,10 +41,20 @@ bcm_raw <-
          time_end, 
          scenario, 
          column_name,
-         value) 
+         value)  
 
-bcm_raw %>%
-  write_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
+#   bcm_raw_wide: Reduce file size and write csv ----
+bcm_raw_wide <- 
+  bcm_raw %>%
+  unite(scenario_variable, c(scenario, variable)) %>%
+  select(point_id, 
+         scenario_variable, 
+         value) %>%
+spread(scenario_variable, value) 
+
+bcm_raw_wide %>%
+  write_csv(here(path_derived, "bcm_raster-to-point_wide.csv"))
+
 # NOTE: Some bcm_raw cells are empty ---- 
 # Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
 # ccsm4_cwda
