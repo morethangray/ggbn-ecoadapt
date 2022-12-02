@@ -30,7 +30,7 @@ fxn_abundance_by_variable <- function(index_data, index_variable, index_bin_size
     lookup_variables %>%
     filter(variable %in% index_variable) %>%
     distinct(metric) %>%
-    nrow() + 2
+    nrow() + 1
   
   # Prepare bins for grouping ----
   # Get max and min to define bins 
@@ -60,13 +60,12 @@ fxn_abundance_by_variable <- function(index_data, index_variable, index_bin_size
     mutate(bin = cut(value, interval_sequence, include.lowest = TRUE)) %>%
     # Count the values for each bin by variable (for the numerator)
     group_by(variable_metric,
-             variable, 
              bin) %>%
     summarize(count = n()) %>%
     ungroup() %>%
     # Create all combinations to identify missing values
     spread(variable_metric, count) %>%
-    gather(variable_metric, count, 3:all_of(n_column)) %>%
+    gather(variable_metric, count, 2:all_of(n_column)) %>%
     # Replace NA with 0
     mutate(count = ifelse(is.na(count), 0, count), 
            # Calculate percent by bin
@@ -76,6 +75,7 @@ fxn_abundance_by_variable <- function(index_data, index_variable, index_bin_size
     spread(variable_metric, percent) %>%
     # Join annotation for bins
     left_join(bin_annotation, "bin") %>%
+    mutate(variable = index_variable) %>%
     relocate(n_bin, 
              bin, 
              bin_from,

@@ -1,27 +1,29 @@
 ﻿column_name,time_end,scenario,variable_metric,variable,metric,n_column,comments
-ccsm4_cwda,future,ccsm4,cwd_avg,cwd,avg,4,why is there an a at the end of the name
-cnrmd_cwda,future,cnrm,cwd_avg,cwd,avg,16,why is there an a at the end of the name
-hadg_cwda,future,hadg,cwd_avg,cwd,avg,17,why is there an a at the end of the name
-hist_cwda,historic,hist,cwd_avg,cwd,avg,23,why is there an a at the end of the name
-ccsm4_pptdjf,future,ccsm4,ppt_djf,ppt,djf,5,
-cnrm_pptdjf,future,cnrm,ppt_djf,ppt,djf,11,
-hadg_pptdjf,future,hadg,ppt_djf,ppt,djf,18,
-hist_pptdjf,historic,hist,ppt_djf,ppt,djf,24,
-ccsm4_pptjja,future,ccsm4,ppt_jja,ppt,jja,6,
-cnrm_pptjja,future,cnrm,ppt_jja,ppt,jja,12,
-hadg_pptjja,future,hadg,ppt_jja,ppt,jja,19,
-hist_pptjja,historic,hist,ppt_jja,ppt,jja,25,
-ccsm4_runrch,future,ccsm4,rrr_avg,rnr,avg,7,recharge and runoff
-cnrm_runrch,future,cnrm,rrr_avg,rnr,avg,13,recharge and runoff
-hadg_runrch,future,hadg,rrr_avg,rnr,avg,20,recharge and runoff
-hist_runrch,historic,hist,rrr_avg,rnr,avg,26,recharge and runoff
-ccsm4_tmndjf,future,ccsm4,tmp_djf,tmp,djf,8,
-cnrm_tmndjfc,future,cnrm,tmp_djf,tmp,djf,14,why is there a c at the end of the name
-hadg_tmndjf,future,hadg,tmp_djf,tmp,djf,21,
-hist_tmndjf,historic,hist,tmp_djf,tmp,djf,27,
-ccsm4_avetemp,future,ccsm4,tmp_avg,tmp,avg,3,
+ccsm4_avetemp,future,ccsm,tmp_avg,tmp,avg,3,
+ccsm4_cwda,future,ccsm,cwd_avg,cwd,avg,4,why is there an a at the end of the name
+ccsm4_pptdjf,future,ccsm,ppt_djf,ppt,djf,5,
+ccsm4_pptjja,future,ccsm,ppt_jja,ppt,jja,6,
+ccsm4_runrch,future,ccsm,rnr_avg,rnr,avg,7,recharge and runoff
+ccsm4_tmndjf,future,ccsm,tmp_djf,tmp,djf,8,changed tmn to tmp
+ccsm4_tmxjja,future,ccsm,tmp_jja,tmp,jja,9,changed tmx to tmp
 cnrm_avetemp,future,cnrm,tmp_avg,tmp,avg,10,
-hist_avetmp,historic,hist,tmp_avg,tmp,avg,22,
-ccsm4_tmxjja,future,ccsm4,tmp_jja,tmp,jja,9,
-cnrm_tmxjjac,future,cnrm,tmp_jja,tmp,jja,15,why is there a c at the end of the name
-hist_tmxjja,historic,hist,tmp_jja,tmp,jja,28,
+cnrm_pptdjf,future,cnrm,ppt_djf,ppt,djf,11,
+cnrm_pptjja,future,cnrm,ppt_jja,ppt,jja,12,
+cnrm_runrch,future,cnrm,rnr_avg,rnr,avg,13,recharge and runoff
+cnrm_tmndjfc,future,cnrm,tmp_djf,tmp,djf,14,changed tmn to tmp; why is there a c at the end of the name
+cnrm_tmxjjac,future,cnrm,tmp_jja,tmp,jja,15,changed tmx to tmp; why is there a c at the end of the name
+cnrmd_cwda,future,cnrm,cwd_avg,cwd,avg,16,why is there an a at the end of the name
+hadg_avetemp,future,hadg,tmp_avg,tmp,avg,17,
+hadg_cwda,future,hadg,cwd_avg,cwd,avg,18,why is there an a at the end of the name
+hadg_pptdjf,future,hadg,ppt_djf,ppt,djf,19,
+hadg_pptjja,future,hadg,ppt_jja,ppt,jja,20,
+hadg_runrch,future,hadg,rnr_avg,rnr,avg,21,recharge and runoff
+hadg_tmndjf,future,hadg,tmp_djf,tmp,djf,22,changed tmn to tmp
+hadg_tmxjja,future,hadg,tmp_jja,tmp,jja,23,
+hist_avetmp,historic,hist,tmp_avg,tmp,avg,24,
+hist_cwda,historic,hist,cwd_avg,cwd,avg,25,why is there an a at the end of the name
+hist_pptdjf,historic,hist,ppt_djf,ppt,djf,26,
+hist_pptjja,historic,hist,ppt_jja,ppt,jja,27,
+hist_runrch,historic,hist,rnr_avg,rnr,avg,28,recharge and runoff
+hist_tmndjf,historic,hist,tmp_djf,tmp,djf,29,changed tmn to tmp
+hist_tmxjja,historic,hist,tmp_jja,tmp,jja,30,changed tmx to tmp

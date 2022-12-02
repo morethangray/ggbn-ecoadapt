@@ -8,58 +8,57 @@ library(here)   ## To manage directories
 # Source functions 
 path_fxn <- here("R/functions")
 source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
+source(file = here(path_fxn, "ggbn-ecoadapt_fxn_bcm.R"))
+
 
 # ========================================================== -----
 # CREATE DATA FRAMES ----
 # [NOT RUN] Read and tidy raw data ----
-# # Values by point, within study area extent 
-# # Derived from rasters at 270m resolution 
-# bcm_raw <- 
+# # Values by point, within study area extent
+# # Derived from rasters at 270m resolution
+# bcm_raw <-
 #   read_csv(here(path_raw, "bcm_raster-to-point_wide.csv")) %>%
 #   clean_names() %>%
+#   select(-objectid, 
+#          -shape) %>%
+#   rename(point_id = pointid) %>%
 #   gather(column_name, value, ccsm4_avetemp:hist_tmxjja) %>%
-#   select(-object_id) %>%
 #   # Annotate with metric, variable, subset, time interval, bcm scenario
 #   left_join(lookup_variables, "column_name") %>%
 #   arrange(variable_metric,
-#           desc(time_end), 
+#           desc(time_end),
 #           scenario) %>%
-#   select(point_id, 
-#          variable_metric, 
-#          variable, 
-#          metric,
-#          time_end, 
-#          scenario, 
+#   select(point_id,
 #          scenario_variable_metric,
-#          value) 
+#          variable_metric,
+#          variable,
+#          metric,
+#          time_end,
+#          scenario,
+#          value)
 # 
 # bcm_raw %>%
 #   write_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
-#   
-# # NOTE: Some cells are empty 
-# # Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
-# #   ccsm4_cwda
-# #   ccsm4_runrch
-# #   cnrm_runrch
-# #   cnrmd_cwda
-# #   hadg_cwda
-# #   hadg_runrch
+
+# NOTE: Some cells are empty
+# Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
+#   ccsm4_cwda
+#   ccsm4_runrch
+#   cnrm_runrch
+#   cnrmd_cwda
+#   hadg_cwda
+#   hadg_runrch
 # 
-# Reduce file size and write csv 
+# Reduce file size and write csv
 # bcm_raw %>%
-#   select(point_id, 
-#          scenario_variable_metric, 
+#   select(point_id,
+#          scenario_variable_metric,
 #          value) %>%
 #   spread(scenario_variable_metric, value) %>%
 #   write_csv(here(path_derived, "bcm_raster-to-point_wide.csv"))
-# 
+
 #   bcm_tidy  ----
-# Read wide csv and reshape to long 
-bcm_tidy <- 
-  read_csv(here(path_derived, "bcm_raster-to-point_wide.csv")) %>%
-  gather(scenario_variable_metric, value, 2:27) %>%
-  # Annotate with metric, variable, subset, time interval, bcm scenario
-  left_join(lookup_variables, "scenario_variable_metric") 
+bcm_tidy <- read_csv(here(path_derived, "bcm_raster-to-point_long.csv")) 
 
 # ========================================================== -----
 # EVALUATE FUTURE CHANGE: VARIABLE AVERAGE----
@@ -98,7 +97,7 @@ bcm_change_variable <-
            future_minimum_difference)
 
 bcm_change_variable %>%
-  write_csv(here(path_derived, "bcm_future-minimum-change_variable-average.csv"))
+  write_csv(here(path_bcm, "future-minimum_variable-average_change.csv"))
 
 
 # Determine variable average across all scenarios  ----
@@ -111,36 +110,61 @@ bcm_change_variable %>%
 #   read_csv(here(path_derived, "bcm_future-minimum-change_variable-average.csv"))
 
 abundance_025_tmp <- 
-  fxn_abundance_by_variable(index_data = bcm_future_change, 
+  fxn_abundance_by_variable(index_data = bcm_change_variable, 
                             index_variable = "tmp",
                             index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_tmp.csv"))
+  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_tmp.csv"))
                     
 
 abundance_025_ppt <- 
-  fxn_abundance_by_variable(index_data = bcm_future_change, 
+  fxn_abundance_by_variable(index_data = bcm_change_variable, 
                             index_variable = "ppt",
                             index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_ppt.csv"))
+  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_ppt.csv"))
                    
 
 abundance_025_rnr <- 
-  fxn_abundance_by_variable(index_data = bcm_future_change, 
+  fxn_abundance_by_variable(index_data = bcm_change_variable, 
                             index_variable = "rnr",
                             index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_rnr.csv"))
+  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_rnr.csv"))
                     
 
 abundance_025_cwd <- 
-  fxn_abundance_by_variable(index_data = bcm_future_change, 
+  fxn_abundance_by_variable(index_data = bcm_change_variable, 
                             index_variable = "cwd",
                             index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_cwd.csv"))
+  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_cwd.csv"))
                    
 
 
 # ========================================================== -----
 # EVALUATE FUTURE CHANGE: BY VARIABLE_METRIC ----
+# Calculate future minimum and change from historic by scenario ----
+#   bcm_change_variable_metric ----
+bcm_change_variable_metric <- 
+  bcm_tidy %>% 
+  # Exclude points that lack data 
+  drop_na(value) %>%
+  filter(variable %in% "tmp") %>%
+  select(point_id, 
+         variable_metric,
+         # variable,
+         # metric,
+         # time_end, 
+         scenario,
+         value) %>%
+  spread(scenario, value)   %>%
+  # Find the difference between the values for historic, each future
+  mutate(ccsm_difference = ccsm - hist, 
+         cnrm_difference = cnrm - hist, 
+         hadg_difference = hadg - hist)   
+
+bcm_change_variable_metric %>%
+  write_csv(here(path_bcm, "future-minimum_variable-by-scenario_change.csv"))
+
+
+
 # Determine abundance by scenario for each variable_metric ----
 # ---------------------------------------------------------- -----
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -----
@@ -148,8 +172,8 @@ abundance_025_cwd <-
 
 # list_variable_metric <- unique(lookup_variables$variable_metric)
 #   fxn_abundance_by_variable_metric ----
-index_data = bcm_future_change
-index_variable = "ppt"
+index_data = bcm_change_variable
+index_variable = "tmp"
 index_bin_size = 0.025
 
 fxn_abundance_by_variable_metric <- function(index_data, index_variable, index_bin_size){
