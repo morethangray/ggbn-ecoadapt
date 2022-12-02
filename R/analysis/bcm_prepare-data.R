@@ -11,63 +11,75 @@ source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
 
 # ========================================================== -----
 # CREATE DATA FRAMES ----
-# Read raw data ----
-# Values by point, within study area extent 
-# Derived from rasters at 270m resolution 
-bcm_raw <- 
-  read_csv(here(path_raw, "bcm_raster-to-point_wide.csv")) %>%
-  clean_names() %>%
-  gather(column_name, value, ccsm4_avetemp:hist_tmxjja) %>%
-  select(-object_id) %>%
-  # Annotate with metric, variable, subset, time interval, bcm scenario
-  left_join(lookup_variables, "column_name") %>%
-  arrange(metric,
-          variable,
-          desc(time_end), 
-          scenario) %>%
-  select(point_id, 
-         metric, 
-         variable, 
-         time_end, 
-         scenario, 
-         scenario_variable,
-         value) 
-  
-# NOTE: Some cells are empty 
-# Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
-#   ccsm4_cwda
-#   ccsm4_runrch
-#   cnrm_runrch
-#   cnrmd_cwda
-#   hadg_cwda
-#   hadg_runrch
-
-# Reduce file size and write csv ----
-bcm_raw %>%
-  select(point_id, 
-         scenario_variable, 
-         value) %>%
-  spread(scenario_variable, value) %>%
-  write_csv(here(path_derived, "bcm_raster-to-point_wide.csv"))
-# Read wide csv and reshape to long ----
+# [NOT RUN] Read and tidy raw data ----
+# # Values by point, within study area extent 
+# # Derived from rasters at 270m resolution 
+# bcm_raw <- 
+#   read_csv(here(path_raw, "bcm_raster-to-point_wide.csv")) %>%
+#   clean_names() %>%
+#   gather(column_name, value, ccsm4_avetemp:hist_tmxjja) %>%
+#   select(-object_id) %>%
+#   # Annotate with metric, variable, subset, time interval, bcm scenario
+#   left_join(lookup_variables, "column_name") %>%
+#   arrange(variable_metric,
+#           desc(time_end), 
+#           scenario) %>%
+#   select(point_id, 
+#          variable_metric, 
+#          variable, 
+#          metric,
+#          time_end, 
+#          scenario, 
+#          scenario_variable_metric,
+#          value) 
+# 
+# bcm_raw %>%
+#   write_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
+#   
+# # NOTE: Some cells are empty 
+# # Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
+# #   ccsm4_cwda
+# #   ccsm4_runrch
+# #   cnrm_runrch
+# #   cnrmd_cwda
+# #   hadg_cwda
+# #   hadg_runrch
+# 
+# Reduce file size and write csv 
+# bcm_raw %>%
+#   select(point_id, 
+#          scenario_variable_metric, 
+#          value) %>%
+#   spread(scenario_variable_metric, value) %>%
+#   write_csv(here(path_derived, "bcm_raster-to-point_wide.csv"))
+# 
 #   bcm_tidy  ----
+# Read wide csv and reshape to long 
 bcm_tidy <- 
   read_csv(here(path_derived, "bcm_raster-to-point_wide.csv")) %>%
-  gather(scenario_variable, value, 2:27) %>%
+  gather(scenario_variable_metric, value, 2:27) %>%
   # Annotate with metric, variable, subset, time interval, bcm scenario
-  left_join(lookup_variables, "scenario_variable") 
+  left_join(lookup_variables, "scenario_variable_metric") 
 
 # ========================================================== -----
-# EVALUATE FUTURE CHANGE  ----
-# Calculate future minimum and change from historic ----
-#   bcm_future_change ----
-# For each point: calculate the minimum value of each BCM variable, by time period
-#   This finds the minimum among the three future scenarios 
+# EVALUATE FUTURE CHANGE: VARIABLE AVERAGE----
+# Calculate future minimum and average change from historic ----
+# Used for variables with at least two metrics (jja, djf, avg)
+#   TMP: AVG, JJA, DJF
+#   PPT: DJF, JJA
+#   RNR: RCH, RUN ?? Unsure if there are two metrics or one
+#   CWD: Same as by-scenario because there is only one subset
+# At each point, calculate the minimum value among the three futures
 #   Finding the "minimum" does not change the historic data; there is only one value per point
-bcm_future_change <- 
+#
+# unique(lookup_variables$variable)
+#
+#   bcm_change_variable ----
+bcm_change_variable <- 
   bcm_tidy %>%
-  group_by(metric,
-           variable, 
+  group_by(variable_metric, 
+           variable,
+           metric,
            time_end, # Separates historic from future values
            point_id) %>%
   # Some points lack data for cwd so min will be infinite
@@ -78,83 +90,141 @@ bcm_future_change <-
   spread(time_end, value_minimum) %>%
   mutate(future_minimum_difference = future - historic) %>%
   relocate(point_id, 
+           variable_metric, 
+           variable,
            metric, 
-           variable, 
            historic, 
            future_minimum = future, 
            future_minimum_difference)
 
-bcm_future_change %>%
-  write_csv(here(path_derived, "bcm_minimum-future-change.csv"))
-# ---------------------------------------------------------- -----
-# START WORKING HERE -----
-# ---------------------------------------------------------- -----
-# Compare abundance among future scenarios ----
-# Use the difference between the historic and future minimum as input 
-# Count the number of points within a series of 0.025 C bins  
-# Abundance is the percent of total points within each bin 
+bcm_change_variable %>%
+  write_csv(here(path_derived, "bcm_future-minimum-change_variable-average.csv"))
 
-# CONFIRM: 92785 points ----
-#   Subset to temperature and future_min_diff ----
-input_percent <- 
-  bcm_future_min_diff %>%
-  filter(metric %in% "temp") %>%
-  select(variable, 
-         value = future_min_diff, 
-         point_id)
-#   Prepare bins for grouping ----
-# Get max and min for temperature metrics to define bins 
-temp_min <- floor(min(input_percent$value))
-temp_max <- ceiling(max(input_percent$value))
 
-# Create sequence with an interval of 0.025
-seq_025 <- seq(from = temp_min, to = temp_max, by = 0.025)
+# Determine variable average across all scenarios  ----
+#   Use the difference between the historic and future minimum as input 
+#   Bin values and count the number of points per bin
+#   Abundance is the percent of total points within each bin 
+#   Study area comprised of 92785 points (= total points)
 
-bins_025 <- 
-  input_percent %>%
-  # Use the sequence to bin the values for each variable 
-  mutate(bin = cut(value, seq_025, include.lowest = TRUE)) %>%
-  arrange(bin) %>%
-  distinct(bin)
+# bcm_change_variable <-
+#   read_csv(here(path_derived, "bcm_future-minimum-change_variable-average.csv"))
 
-#   Determine count in each bin ----
-# Calculate the total number of points by variable  (for the denominator)
-temp_total <- max(input_percent$point_id)
+abundance_025_tmp <- 
+  fxn_abundance_by_variable(index_data = bcm_future_change, 
+                            index_variable = "tmp",
+                            index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_tmp.csv"))
+                    
 
-bcm_future_min_diff_count <- 
-  input_percent %>%
-  # Use the sequence to bin the values for each variable 
-  mutate(bin = cut(value, seq_025, include.lowest = TRUE)) %>%
-  # Count the values for each bin by variable (for the numerator)
-  group_by(variable, bin) %>%
-  summarize(count = n()) %>%
-  ungroup() %>%
-  # Create all combinations to identify missing values
-  spread(variable, count) %>%
-  gather(variable, count, avg:jja) %>%
-  # Replace NA with 0
-  mutate(count = ifelse(is.na(count), 0, count)) %>%
-  spread(variable, count) 
+abundance_025_ppt <- 
+  fxn_abundance_by_variable(index_data = bcm_future_change, 
+                            index_variable = "ppt",
+                            index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_ppt.csv"))
+                   
 
-# bcm_future_min_diff_count %>%
-#   write_csv(here(path_derived, "bcm_minimum-change_count.csv"))
-#   Determine abundance (% total points) in each bin ----
-bcm_future_min_diff_count_percent <- 
-  bcm_future_min_diff_count %>%
-  gather(variable, count, avg:jja) %>%
-  # Calculate percent by bin
-  mutate(percent = count/temp_total) %>%
-  select(-count) %>%
-  spread(variable, percent) 
+abundance_025_rnr <- 
+  fxn_abundance_by_variable(index_data = bcm_future_change, 
+                            index_variable = "rnr",
+                            index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_rnr.csv"))
+                    
 
-# bcm_future_min_diff_count_percent %>%
-#   write_csv(here(path_derived, "bcm_minimum-change_count-percent.csv"))
+abundance_025_cwd <- 
+  fxn_abundance_by_variable(index_data = bcm_future_change, 
+                            index_variable = "cwd",
+                            index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_bin-0.025_variable-average_cwd.csv"))
+                   
 
 
 # ========================================================== -----
-# HEADING ----
-# ========================================================== -----
-# HEADING ----
+# EVALUATE FUTURE CHANGE: BY VARIABLE_METRIC ----
+# Determine abundance by scenario for each variable_metric ----
+# ---------------------------------------------------------- -----
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -----
+# ---------------------------------------------------------- -----
+
+# list_variable_metric <- unique(lookup_variables$variable_metric)
+#   fxn_abundance_by_variable_metric ----
+index_data = bcm_future_change
+index_variable = "ppt"
+index_bin_size = 0.025
+
+fxn_abundance_by_variable_metric <- function(index_data, index_variable, index_bin_size){
+  
+  # Subset input data to variable_metric of interest ----
+  subset <- 
+    index_data %>%
+    filter(variable %in% index_variable) %>%
+    # Exclude NA values 
+    drop_na(future_minimum_difference) %>%
+    select(point_id, 
+           variable_metric, 
+           variable, 
+           metric,
+           value = future_minimum_difference)  
+  
+  # Create a helper to reshape columns ----
+  n_column <- 
+    lookup_variables %>%
+    filter(variable %in% index_variable) %>%
+    distinct(metric) %>%
+    nrow() + 2
+  
+  # Prepare bins for grouping ----
+  # Get max and min to define bins 
+  value_min <- floor(min(subset$value))
+  value_max <- ceiling(max(subset$value))
+  
+  # Create sequence with an interval of 0.025
+  interval_sequence <- seq(from = value_min, to = value_max, by = index_bin_size)
+  
+  # Create annotation for bins
+  bin_annotation <- 
+    subset %>%
+    # Use the sequence to bin the values for each variable 
+    mutate(bin = cut(value, interval_sequence, include.lowest = TRUE)) %>%
+    arrange(bin) %>%
+    distinct(bin) %>%
+    mutate(bin_from = word(bin, 1, sep = "\\,"), 
+           bin_from = as.numeric(str_remove_all(bin_from, "\\(")), 
+           bin_to = word(bin, 2, sep = "\\,"), 
+           bin_to = as.numeric(str_remove_all(bin_to, "\\]")), 
+           n_bin = 1:n()) 
+  
+  # Determine abundance (% total points) in each bin ----
+  abundance <- 
+    subset %>%
+    # Use the sequence to bin the values for each variable 
+    mutate(bin = cut(value, interval_sequence, include.lowest = TRUE)) %>%
+    # Count the values for each bin by variable (for the numerator)
+    group_by(variable_metric,
+             variable, 
+             bin) %>%
+    summarize(count = n()) %>%
+    ungroup() %>%
+    # Create all combinations to identify missing values
+    spread(variable_metric, count) %>%
+    gather(variable_metric, count, 3:all_of(n_column)) %>%
+    # Replace NA with 0
+    mutate(count = ifelse(is.na(count), 0, count), 
+           # Calculate percent by bin
+           percent = count/n_points, 
+           bin_size = index_bin_size) %>%
+    select(-count) %>%
+    spread(variable_metric, percent) %>%
+    # Join annotation for bins
+    left_join(bin_annotation, "bin") %>%
+    relocate(n_bin, 
+             bin, 
+             bin_from,
+             bin_to, 
+             bin_size,
+             variable)
+}
+
 # ========================================================== -----
 # HEADING ----
 # ========================================================== -----
@@ -162,4 +232,5 @@ bcm_future_min_diff_count_percent <-
 # ========================================================== -----
 # GRAVEYARD ----
 # ---------------------------------------------------------- -----
-
+# START WORKING HERE -----
+# ---------------------------------------------------------- -----

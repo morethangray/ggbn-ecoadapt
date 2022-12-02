@@ -53,8 +53,8 @@ path_out <- here("output/")
 path_prep <- here(path_out, "0_prep-data")
 path_explore <- here(path_out, "1_exploration")
 path_summarize <- here(path_out, "2_summarize")
-path_analysis_1 <- here(path_out, "3_analysis-1")
-path_analysis_2 <- here(path_out, "4_analysis-2")
+path_bcm <- here(path_out, "3_bcm")
+path_fire <- here(path_out, "4_fire")
 
 # For markdown work ----
 path_r <- here("R")
@@ -125,10 +125,15 @@ fxn_kable <- function(df){
 lookup_variables <- 
   read_csv(here(path_lookup, "bcm-variables.csv")) %>%
   select(column_name, 
-         # n_column, 
-         metric, 
+         variable_metric,
          variable,
+         metric,
          time_end, 
          scenario) %>%
-  unite(scenario_variable, c(scenario, variable), remove = FALSE) 
+  unite(scenario_variable_metric, c(scenario, variable, metric), remove = FALSE) 
+
+#   n_points ----
+
+n_points <- 92785
+
 # ========================================================== -----

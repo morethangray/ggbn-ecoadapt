@@ -16,7 +16,7 @@ source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
 bcm_input <- read_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
 bcm_future_change <- read_csv(here(path_derived, "bcm_minimum-future-change.csv"))
 # ========================================================== -----
-# EVALUATE FUTURE CHANGE  ----
+# FUTURE CHANGE  ----
 # Compare abundance among future scenarios
 # Use the difference between the historic and future minimum as input 
 # Count the number of points within a series of 0.025 C bins  
@@ -28,7 +28,6 @@ bcm_future_min_diff_count_percent
   input_percent %>%
   # Use the sequence to bin the values for each metric 
   mutate(bin = cut(value, seq_025, include.lowest = TRUE)) %>%
-  # gather(metric, percent, avg:jja) %>%
   mutate(n_bin = word(bin, 1, sep = "\\,"), 
          n_bin = as.numeric(str_remove_all(n_bin, "\\("))) %>%
   # arrange(value) %>%
@@ -36,6 +35,10 @@ bcm_future_min_diff_count_percent
   ggdensity(x = "n_bin",
             color = "metric")  
 
+# Create plots showing abundance by scenario ----
+# for AVG, JJA, DJF, CWD, PPT (DJF, JJA), RCH, RUN (or RNR?)
+# Create plot showing average of scenarios ----
+# for TMP (AVG, JJA, DJF), PPT (DJF, JJA), RNR (RCH, RUN)
 # ========================================================== -----
 # Other plots  ----
 # Density plot by variable
