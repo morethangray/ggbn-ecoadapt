@@ -132,6 +132,38 @@ lookup_variables <-
          scenario) %>%
   unite(scenario_variable_metric, c(scenario, variable, metric), remove = FALSE) 
 
+
+#   lookup_labels_all  -----
+lookup_labels_all <- 
+  read_csv(here(path_lookup, "bcm-variables.csv")) %>%
+  select(variable_metric,
+         variable,
+         metric,
+         units,
+         time_end, 
+         scenario, 
+         starts_with("lab"))  
+  
+
+#   lookup_labels_variable  -----
+lookup_labels_variable <- 
+  lookup_labels_all %>%
+  distinct(variable,
+           metric,
+           units,
+           lab_variable, 
+           lab_metric)  
+  
+
+#   lookup_labels_scenario -----
+lookup_labels_scenario <- 
+  lookup_labels_all %>%
+  distinct(time_end, 
+           scenario, 
+           lab_time, 
+           lab_scenario)  
+  
+
 #   n_points ----
 
 n_points <- 92785

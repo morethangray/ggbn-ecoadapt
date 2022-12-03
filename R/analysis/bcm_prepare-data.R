@@ -9,7 +9,7 @@ library(here)   ## To manage directories
 path_fxn <- here("R/functions")
 source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
 source(file = here(path_fxn, "ggbn-ecoadapt_fxn_bcm.R"))
-
+source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 
 # ========================================================== -----
 # CREATE DATA FRAMES ----
@@ -19,7 +19,7 @@ source(file = here(path_fxn, "ggbn-ecoadapt_fxn_bcm.R"))
 # bcm_raw <-
 #   read_csv(here(path_raw, "bcm_raster-to-point_wide.csv")) %>%
 #   clean_names() %>%
-#   select(-objectid, 
+#   select(-objectid,
 #          -shape) %>%
 #   rename(point_id = pointid) %>%
 #   gather(column_name, value, ccsm4_avetemp:hist_tmxjja) %>%
@@ -85,6 +85,7 @@ bcm_change_variable <-
   drop_na(value) %>%
   # Find the minimum value at each point
   summarize(value_minimum = min(value, na.rm = TRUE)) %>%
+  ungroup() %>%
   # Find the difference between the historic and future minimums
   spread(time_end, value_minimum) %>%
   mutate(future_minimum_difference = future - historic) %>%
@@ -97,45 +98,40 @@ bcm_change_variable <-
            future_minimum_difference)
 
 bcm_change_variable %>%
-  write_csv(here(path_bcm, "future-minimum_variable-average_change.csv"))
+  write_csv(here(path_derived, "future-minimum_variable-average_change.csv"))
 
 
-# Determine variable average across all scenarios  ----
+# Determine variable average (by bin) across all scenarios  ----
 #   Use the difference between the historic and future minimum as input 
 #   Bin values and count the number of points per bin
 #   Abundance is the percent of total points within each bin 
 #   Study area comprised of 92785 points (= total points)
 
-# bcm_change_variable <-
-#   read_csv(here(path_derived, "bcm_future-minimum-change_variable-average.csv"))
+bcm_change_variable <-
+  read_csv(here(path_derived, "future-minimum_variable-average_change.csv"))
 
-abundance_025_tmp <- 
-  fxn_abundance_by_variable(index_data = bcm_change_variable, 
-                            index_variable = "tmp",
-                            index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_tmp.csv"))
-                    
+bin_by_variable_tmp <- 
+  fxn_bin_by_variable(index_data = bcm_change_variable, 
+                      index_variable = "tmp",
+                      index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_variable-average_bins-0.025_tmp.csv"))
 
-abundance_025_ppt <- 
-  fxn_abundance_by_variable(index_data = bcm_change_variable, 
-                            index_variable = "ppt",
-                            index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_ppt.csv"))
-                   
+bin_by_variable_ppt <- 
+  fxn_bin_by_variable(index_data = bcm_change_variable, 
+                      index_variable = "ppt",
+                      index_bin_size = 0.025) %>%
+  write_csv(here(path_bcm, "future-minimum_variable-average_bins-0.025_ppt.csv"))
 
-abundance_025_rnr <- 
-  fxn_abundance_by_variable(index_data = bcm_change_variable, 
-                            index_variable = "rnr",
-                            index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_rnr.csv"))
-                    
+# Calculate abundance by bin ----
+abundance_025_tmp <-
+  fxn_abundance_by_variable(index_data = bin_by_variable_tmp) %>%
+  write_csv(here(path_bcm, "future-minimum_variable-average_bins-0.025_abundance_tmp.csv"))
 
-abundance_025_cwd <- 
-  fxn_abundance_by_variable(index_data = bcm_change_variable, 
-                            index_variable = "cwd",
-                            index_bin_size = 0.025) %>%
-  write_csv(here(path_bcm, "future-minimum_variable-average_bin-0.025_cwd.csv"))
-                   
+
+abundance_025_ppt <-
+  fxn_abundance_by_variable(index_data = bin_by_variable_ppt) %>%
+  write_csv(here(path_bcm, "future-minimum_variable-average_bins-0.025_abundance_ppt.csv"))
+
 
 
 # ========================================================== -----
@@ -146,26 +142,67 @@ bcm_change_variable_metric <-
   bcm_tidy %>% 
   # Exclude points that lack data 
   drop_na(value) %>%
-  filter(variable %in% "tmp") %>%
   select(point_id, 
          variable_metric,
-         # variable,
-         # metric,
-         # time_end, 
          scenario,
          value) %>%
   spread(scenario, value)   %>%
   # Find the difference between the values for historic, each future
   mutate(ccsm_difference = ccsm - hist, 
          cnrm_difference = cnrm - hist, 
-         hadg_difference = hadg - hist)   
+         hadg_difference = hadg - hist) %>%
+  mutate(variable = str_sub(variable_metric, 1, 3), 
+         metric = str_sub(variable_metric, 5, 7))
 
 bcm_change_variable_metric %>%
-  write_csv(here(path_bcm, "future-minimum_variable-by-scenario_change.csv"))
-
-
+  write_csv(here(path_derived, "future-minimum_variable-by-scenario_change.csv"))
 
 # Determine abundance by scenario for each variable_metric ----
+bcm_change_variable_metric <- 
+  read_csv(here(path_derived, "future-minimum_variable-by-scenario_change.csv"))
+
+#   fxn_bin_by_variable_metric ----
+# index_data = bcm_change_variable_metric
+# index_variable <- "tmp"
+# index_bin_size <- 0.025
+bin_by_variable_metric_tmp <- 
+  fxn_bin_by_variable_metric(index_data = bcm_change_variable_metric, 
+                             index_variable <- "tmp",
+                             index_bin_size <- 0.025)
+
+bin_by_variable_metric_ppt <- 
+  fxn_bin_by_variable_metric(index_data = bcm_change_variable_metric, 
+                             index_variable <- "ppt",
+                             index_bin_size <- 0.025)
+
+bin_by_variable_metric_cwd <- 
+  fxn_bin_by_variable_metric(index_data = bcm_change_variable_metric, 
+                             index_variable <- "cwd",
+                             index_bin_size <- 0.025)
+
+bin_by_variable_metric_rnr <- 
+  fxn_bin_by_variable_metric(index_data = bcm_change_variable_metric, 
+                             index_variable <- "rnr",
+                             index_bin_size <- 0.025)
+# #   bind_bins_variable_metric: Iterate by variable and bind -----
+# list_variables <- unique(lookup_variables$variable)
+# datalist_bins <- list()
+# for(abcdef in list_variables){
+#   
+#   datalist_bins[[abcdef]] <- 
+#     fxn_bin_by_variable_metric(
+#       index_data = bcm_change_variable_metric, 
+#       index_variable <- abcdef,
+#       index_bin_size <- 0.025
+#       )
+# }
+# bind_bins_variable_metric <- do.call(bind_rows, datalist_bins)
+
+
+#   fxn_plot_abundance_by_variable_metric -----
+bin_by_variable_metric_tmp %>%
+  fxn_plot_abundance_by_variable_metric()
+
 # ---------------------------------------------------------- -----
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -----
 # ---------------------------------------------------------- -----

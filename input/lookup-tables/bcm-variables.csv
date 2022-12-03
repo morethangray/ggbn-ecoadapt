@@ -1,29 +1,29 @@
-﻿column_name,time_end,scenario,variable_metric,variable,metric,n_column,comments
-ccsm4_avetemp,future,ccsm,tmp_avg,tmp,avg,3,
-ccsm4_cwda,future,ccsm,cwd_avg,cwd,avg,4,why is there an a at the end of the name
-ccsm4_pptdjf,future,ccsm,ppt_djf,ppt,djf,5,
-ccsm4_pptjja,future,ccsm,ppt_jja,ppt,jja,6,
-ccsm4_runrch,future,ccsm,rnr_avg,rnr,avg,7,recharge and runoff
-ccsm4_tmndjf,future,ccsm,tmp_djf,tmp,djf,8,changed tmn to tmp
-ccsm4_tmxjja,future,ccsm,tmp_jja,tmp,jja,9,changed tmx to tmp
-cnrm_avetemp,future,cnrm,tmp_avg,tmp,avg,10,
-cnrm_pptdjf,future,cnrm,ppt_djf,ppt,djf,11,
-cnrm_pptjja,future,cnrm,ppt_jja,ppt,jja,12,
-cnrm_runrch,future,cnrm,rnr_avg,rnr,avg,13,recharge and runoff
-cnrm_tmndjfc,future,cnrm,tmp_djf,tmp,djf,14,changed tmn to tmp; why is there a c at the end of the name
-cnrm_tmxjjac,future,cnrm,tmp_jja,tmp,jja,15,changed tmx to tmp; why is there a c at the end of the name
-cnrmd_cwda,future,cnrm,cwd_avg,cwd,avg,16,why is there an a at the end of the name
-hadg_avetemp,future,hadg,tmp_avg,tmp,avg,17,
-hadg_cwda,future,hadg,cwd_avg,cwd,avg,18,why is there an a at the end of the name
-hadg_pptdjf,future,hadg,ppt_djf,ppt,djf,19,
-hadg_pptjja,future,hadg,ppt_jja,ppt,jja,20,
-hadg_runrch,future,hadg,rnr_avg,rnr,avg,21,recharge and runoff
-hadg_tmndjf,future,hadg,tmp_djf,tmp,djf,22,changed tmn to tmp
-hadg_tmxjja,future,hadg,tmp_jja,tmp,jja,23,
-hist_avetmp,historic,hist,tmp_avg,tmp,avg,24,
-hist_cwda,historic,hist,cwd_avg,cwd,avg,25,why is there an a at the end of the name
-hist_pptdjf,historic,hist,ppt_djf,ppt,djf,26,
-hist_pptjja,historic,hist,ppt_jja,ppt,jja,27,
-hist_runrch,historic,hist,rnr_avg,rnr,avg,28,recharge and runoff
-hist_tmndjf,historic,hist,tmp_djf,tmp,djf,29,changed tmn to tmp
-hist_tmxjja,historic,hist,tmp_jja,tmp,jja,30,changed tmx to tmp
+﻿column_name,time_end,scenario,variable_metric,variable,metric,n_column,units,lab_variable,lab_variable_long,lab_metric,lab_scenario,lab_time,comments
+ccsm4_cwda,future,ccsm,cwd_avg,cwd,avg,5,mm,Climatic water deficit,Climatic water deficit (CWD),Annual average (AVG),CCSM4,Future,why is there an a at the end of the name
+cnrmd_cwda,future,cnrm,cwd_avg,cwd,avg,17,mm,Climatic water deficit,Climatic water deficit (CWD),Annual average (AVG),CNRM-CM5,Future,why is there an a at the end of the name
+hadg_cwda,future,hadg,cwd_avg,cwd,avg,19,mm,Climatic water deficit,Climatic water deficit (CWD),Annual average (AVG),HadGEM2-CC,Future,why is there an a at the end of the name
+hist_cwda,historic,hist,cwd_avg,cwd,avg,26,mm,Climatic water deficit,Climatic water deficit (CWD),Annual average (AVG),Recent,Historic,why is there an a at the end of the name
+ccsm4_pptdjf,future,ccsm,ppt_djf,ppt,djf,6,mm,Precipitation,Precipitation (PPT),Winter minimum (DJF),CCSM4,Future,
+ccsm4_pptjja,future,ccsm,ppt_jja,ppt,jja,7,mm,Precipitation,Precipitation (PPT),Summer maximum (JJA),CCSM4,Future,
+cnrm_pptdjf,future,cnrm,ppt_djf,ppt,djf,12,mm,Precipitation,Precipitation (PPT),Winter minimum (DJF),CNRM-CM5,Future,
+cnrm_pptjja,future,cnrm,ppt_jja,ppt,jja,13,mm,Precipitation,Precipitation (PPT),Summer maximum (JJA),CNRM-CM5,Future,
+hadg_pptdjf,future,hadg,ppt_djf,ppt,djf,20,mm,Precipitation,Precipitation (PPT),Winter minimum (DJF),HadGEM2-CC,Future,
+hadg_pptjja,future,hadg,ppt_jja,ppt,jja,21,mm,Precipitation,Precipitation (PPT),Summer maximum (JJA),HadGEM2-CC,Future,
+hist_pptdjf,historic,hist,ppt_djf,ppt,djf,27,mm,Precipitation,Precipitation (PPT),Winter minimum (DJF),Recent,Historic,
+hist_pptjja,historic,hist,ppt_jja,ppt,jja,28,mm,Precipitation,Precipitation (PPT),Summer maximum (JJA),Recent,Historic,
+ccsm4_runrch,future,ccsm,rnr_avg,rnr,avg,8,mm,Recharge & runoff ,Recharge & runoff (RNR),Annual average (AVG),CCSM4,Future,recharge and runoff
+cnrm_runrch,future,cnrm,rnr_avg,rnr,avg,14,mm,Recharge & runoff ,Recharge & runoff (RNR),Annual average (AVG),CNRM-CM5,Future,recharge and runoff
+hadg_runrch,future,hadg,rnr_avg,rnr,avg,22,mm,Recharge & runoff ,Recharge & runoff (RNR),Annual average (AVG),HadGEM2-CC,Future,recharge and runoff
+hist_runrch,historic,hist,rnr_avg,rnr,avg,29,mm,Recharge & runoff ,Recharge & runoff (RNR),Annual average (AVG),Recent,Historic,recharge and runoff
+ccsm4_avetemp,future,ccsm,tmp_avg,tmp,avg,4,C,Temperature,Temperature (TMP),Annual average (AVG),CCSM4,Future,
+ccsm4_tmndjf,future,ccsm,tmp_djf,tmp,djf,9,C,Temperature,Temperature (TMP),Winter minimum (DJF),CCSM4,Future,changed tmn to tmp
+ccsm4_tmxjja,future,ccsm,tmp_jja,tmp,jja,10,C,Temperature,Temperature (TMP),Summer maximum (JJA),CCSM4,Future,changed tmx to tmp
+cnrm_avetemp,future,cnrm,tmp_avg,tmp,avg,11,C,Temperature,Temperature (TMP),Annual average (AVG),CNRM-CM5,Future,
+cnrm_tmndjfc,future,cnrm,tmp_djf,tmp,djf,15,C,Temperature,Temperature (TMP),Winter minimum (DJF),CNRM-CM5,Future,changed tmn to tmp; why is there a c at the end of the name
+cnrm_tmxjjac,future,cnrm,tmp_jja,tmp,jja,16,C,Temperature,Temperature (TMP),Summer maximum (JJA),CNRM-CM5,Future,changed tmx to tmp; why is there a c at the end of the name
+hadg_avetemp,future,hadg,tmp_avg,tmp,avg,18,C,Temperature,Temperature (TMP),Annual average (AVG),HadGEM2-CC,Future,
+hadg_tmndjf,future,hadg,tmp_djf,tmp,djf,23,C,Temperature,Temperature (TMP),Winter minimum (DJF),HadGEM2-CC,Future,changed tmn to tmp
+hadg_tmxjja,future,hadg,tmp_jja,tmp,jja,24,C,Temperature,Temperature (TMP),Summer maximum (JJA),HadGEM2-CC,Future,
+hist_avetmp,historic,hist,tmp_avg,tmp,avg,25,C,Temperature,Temperature (TMP),Annual average (AVG),Recent,Historic,
+hist_tmndjf,historic,hist,tmp_djf,tmp,djf,30,C,Temperature,Temperature (TMP),Winter minimum (DJF),Recent,Historic,changed tmn to tmp
+hist_tmxjja,historic,hist,tmp_jja,tmp,jja,31,C,Temperature,Temperature (TMP),Summer maximum (JJA),Recent,Historic,changed tmx to tmp
