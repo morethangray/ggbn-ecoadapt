@@ -2,7 +2,7 @@
 # ========================================================== -----
 # LOAD LIBRARIES ----
 # File management 
-# library(readxl)   ## To read xlsx files
+library(readxl)   ## To read xlsx files
 
 # Munge
 # library(collapse)   ## For advanced data frame manipulation
@@ -112,11 +112,11 @@ fxn_kable <- function(df){
 lookup_variables <- 
   read_csv(here(path_lookup, "bcm-variables.csv")) %>%
   dplyr::select(column_name, 
-         variable_metric,
-         variable,
-         metric,
-         time_end, 
-         scenario) %>%
+                variable_metric,
+                variable,
+                metric,
+                time_end, 
+                scenario) %>%
   unite(scenario_variable_metric, c(scenario, variable, metric), remove = FALSE) 
 
 

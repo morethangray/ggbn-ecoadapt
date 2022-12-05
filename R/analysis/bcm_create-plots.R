@@ -19,18 +19,12 @@ variable_bins <- read_csv(here(path_derived, "future-minimum_variable-average_bi
 # Temperature ----
 variable_bins %>%
   filter(variable %in% "tmp") %>%
-  fxn_plot_abundance_by_variable()
-
+  fxn_plot_abundance_by_variable(index_path = path_bcm_plot)
 
 # Precipitation ----
 variable_bins %>%
   filter(variable %in% "ppt") %>%
-  fxn_plot_abundance_by_variable()
-# ---------------------------------------------------------- -----
-# START WORKING HERE: REVISE PPT_DJF ----
-
-# ---------------------------------------------------------- -----
-
+  fxn_plot_abundance_by_variable(index_path = path_bcm_plot)
 
 # ========================================================== -----
 # FUTURE CHANGE BY VARIABLE_METRIC (BY SCENARIO) ----
@@ -38,7 +32,6 @@ variable_bins %>%
 #   variable_metric_bins ----- 
 variable_metric_bins <- 
   read_csv(here(path_derived, "future-minimum_variable-by-scenario_bin-0.025_all.csv"))
-
 
 
 # Temperature ----

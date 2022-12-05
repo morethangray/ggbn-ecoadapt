@@ -9,20 +9,25 @@ library(here)   ## To manage directories
 path_fxn <- here("R/functions")
 source(file = here(path_fxn, "ggbn-ecoadapt_fxn_basic.R"))
 source(file = here(path_fxn, "ggbn-ecoadapt_fxn_bcm.R"))
-source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
+# source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 
 # ========================================================== -----
 # CREATE DATA FRAMES ----
 # [NOT RUN] Read and tidy raw data ----
 # # Values by point, within study area extent
 # # Derived from rasters at 270m resolution
+# # Read data table 
 # bcm_raw <-
-#   read_csv(here(path_raw, "bcm_raster-to-point_wide.csv")) %>%
+#   read_xlsx(here(path_raw, "bcm_raster-to-point.xlsx")) %>%
 #   clean_names() %>%
-#   select(-objectid,
-#          -shape) %>%
-#   rename(point_id = pointid) %>%
-#   gather(column_name, value, ccsm4_avetemp:hist_tmxjja) %>%
+#   select(-objectid) %>%
+#   rename(point_id = pointid) 
+# 
+# # Reshape to long format 
+# ncol_bcm_raw <- ncol(bcm_raw)
+# 
+# bcm_raw %>%
+#   gather(column_name, value, 2:all_of(ncol_bcm_raw)) %>%
 #   # Annotate with metric, variable, subset, time interval, bcm scenario
 #   left_join(lookup_variables, "column_name") %>%
 #   arrange(variable_metric,
@@ -35,20 +40,9 @@ source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 #          metric,
 #          time_end,
 #          scenario,
-#          value)
-# 
-# bcm_raw %>%
+#          value) %>%
 #   write_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
 
-# NOTE: Some cells are empty
-# Null values in col 4, 7, 13, 16, 17, 20 (e.g., row 6211, 8401)
-#   ccsm4_cwda
-#   ccsm4_runrch
-#   cnrm_runrch
-#   cnrmd_cwda
-#   hadg_cwda
-#   hadg_runrch
-# 
 # Reduce file size and write csv
 # bcm_raw %>%
 #   select(point_id,
@@ -59,6 +53,7 @@ source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 
 #   bcm_tidy  ----
 bcm_tidy <- read_csv(here(path_derived, "bcm_raster-to-point_long.csv")) 
+
 
 # ========================================================== -----
 # EVALUATE FUTURE CHANGE: VARIABLE AVERAGE----
@@ -180,12 +175,7 @@ variable_metric_bins_abundance <-
                                    index_list <- list_variable_metric) %>%
   write_csv(here(path_derived, "future-minimum_variable-by-scenario_bin-0.025_abundance_all.csv"))
 # ========================================================== -----
-# HEADING ----
-# ========================================================== -----
-# HEADING ----
-# ========================================================== -----
 # GRAVEYARD ----
-# ---------------------------------------------------------- -----
 # ---------------------------------------------------------- -----
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -----
 # ---------------------------------------------------------- -----

@@ -55,7 +55,7 @@ fxn_bin_by_variable <- function(index_data, index_variable, index_bin_size){
   
 }
 #   fxn_plot_abundance_by_variable -----
-fxn_plot_abundance_by_variable <- function(index_data){
+fxn_plot_abundance_by_variable <- function(index_data, index_path){
   
   index_variable <- unique(index_data$variable)
   
@@ -91,6 +91,17 @@ fxn_plot_abundance_by_variable <- function(index_data){
       scale_color_manual(values = colors_metrics_2) +
       xlab("Minimum change in precipitation (mm)")  
   }
+  
+  ggsave(here(index_path, 
+              paste0("future-change_",
+                     index_variable, 
+                     "-average_", 
+                     Sys.Date(),
+                     ".png")), 
+         width = 10.5,
+         height = 3.5, 
+         units = "in",
+         dpi = 300)
 }
 #   fxn_abundance_by_variable -----
 # index_data <- bin_by_variable_tmp
@@ -254,6 +265,8 @@ fxn_plot_abundance_by_variable_metric <- function(index_data, index_variable_met
   ggsave(here(index_path, 
               paste0("future-change_",
                      index_variable_metric, 
+                     "_", 
+                     Sys.Date(),
                      ".png")), 
          width = 9,
          height = 5, 
@@ -313,6 +326,8 @@ fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variab
   ggsave(here(index_path, 
               paste0("future-change_stacked_",
                      index_variable, 
+                     "_", 
+                     Sys.Date(),
                      ".png")), 
          width = 5.15,
          height = 7.25, 
@@ -322,6 +337,9 @@ fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variab
 #   fxn_abundance_by_variable_metric ----
 # index_data <- variable_metric_bins
 # index_name <- index_list[1]
+# index_list <- list_variable_metric
+# 
+
 fxn_abundance_by_variable_metric <- function(index_data, index_list){
   
   datalist <- list()
@@ -337,14 +355,7 @@ fxn_abundance_by_variable_metric <- function(index_data, index_list){
     index_variable_metric <- unique(subset$variable_metric)
     index_bin_size <- unique(subset$bin_size)
     
-    # To reshape columsn
-    n_column <- 
-      lookup_variables %>%
-      filter(variable %in% index_variable) %>%
-      distinct(metric) %>%
-      nrow() + 6
-  
-  
+    
   # Determine abundance (% total points) in each bin ----
   datalist[[index_name]] <- 
       subset %>%
@@ -360,18 +371,18 @@ fxn_abundance_by_variable_metric <- function(index_data, index_list){
       ungroup() %>%
       # Create all combinations to identify missing values
       spread(variable_metric, count) %>%
-      gather(variable_metric, count, 7:all_of(n_column)) %>%
+      gather(variable_metric, count, 7:7) %>%
       # Replace NA with 0
       mutate(count = ifelse(is.na(count), 0, count), 
              # Calculate percent by bin
              percent = count/n_points) %>%
       select(-count) %>%
-      spread(variable_metric, percent) %>%
       relocate(n_bin, 
                bin, 
                bin_from,
                bin_to, 
                bin_size,
+               variable_metric,
                variable)
       
   }
