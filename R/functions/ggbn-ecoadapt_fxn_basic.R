@@ -1,44 +1,29 @@
-# updated: 2022-12-01 ----
+# updated: 2022-12-05  ----
 # ========================================================== -----
 # LOAD LIBRARIES ----
 # File management 
-# library(fs)   ## To manage directories
-# library(here)   ## To read from and write to the correct folder
-# library(openxlsx)   ## To work with xlsx files
 # library(readxl)   ## To read xlsx files
-# library(xlsx)   ## To work with xlsx files
 
 # Munge
 # library(collapse)   ## For advanced data frame manipulation
-# library(data.table)   ## We use the data.table way to wrangle data in this text
 # library(forcats)   ## For working with factor variables
-# library(furrr)   ## Combines tidyverse and parallel packages
 # library(fuzzyjoin)   ## To join inexact matches
 library(janitor)   ## To clean data tables
 # library(lubridate)   ## To work with dates and times
-# library(magrittr)   ## Instead of nesting functions, we use the pipe operator from this package
-# library(stringr)   ## To wrangle character variables
-# library(tidyverse)   ## To manipulate data frames
 
 # Graphing 
-# library(cowplot)   ## To combine plots
-# library(dabestr)   ## To make several plot types
-# library(ggforce)   ## For improved jitter plots
-# library(ggplot2)   ## For plotting
 library(ggpubr)   ## For predefined ggplot layouts
-# library(ggradar)   ## To create a radar chart
-# library(ggsci)   ## For color palettes
-# library(ggsignif)   ## To add significance results to plots
-# library(ggthemes)   ## For the colorblind palette
-# library(lazyWeave)   ## For pretty p-values
 # library(lemon)   ## To manipulate faceted plots
 # library(patchwork)   ## To manipulate multi-panel plots
-# library(viridis)   ## For the viridis color palette
+
+# Spatial
+# library(rgdal)   ## Provides bindings to the 'Geospatial' Data Abstraction Library (GDAL)
+# library(raster)   ## Reading, writing, manipulating, analyzing and modeling of spatial data
+# NOTE: rgdal() and raster() mask dplyr functions; do not load library globally
 
 # Tabling
 # library(kableExtra)   ## To improve kable tables
 # library(knitr)   ## To make kable tables
-
 
 # ========================================================== -----
 # DEFINE FILE PATHS ----
@@ -46,6 +31,7 @@ library(ggpubr)   ## For predefined ggplot layouts
 path_in <-  here("input")
 path_lookup <- here(path_in, "lookup-tables")
 path_raw <- here(path_in, "data-raw")
+path_raw_spatial <- here(path_raw, "spatial")
 path_derived <- here(path_in, "data-derived")
 
 # For output, excluding initial set of derived data  ----
@@ -54,6 +40,7 @@ path_prep <- here(path_out, "0_prep-data")
 path_explore <- here(path_out, "1_exploration")
 path_summarize <- here(path_out, "2_summarize")
 path_bcm <- here(path_out, "3_bcm")
+path_bcm_plot <- here(path_bcm, "plots")
 path_fire <- here(path_out, "4_fire")
 
 # For markdown work ----
@@ -124,7 +111,7 @@ fxn_kable <- function(df){
 #   lookup_variables  -----
 lookup_variables <- 
   read_csv(here(path_lookup, "bcm-variables.csv")) %>%
-  select(column_name, 
+  dplyr::select(column_name, 
          variable_metric,
          variable,
          metric,
@@ -168,4 +155,8 @@ lookup_labels_scenario <-
 
 n_points <- 92785
 
+#   list_variable ----
+list_variable <- unique(lookup_variables$variable)
+#   list_variable_metric ----
+list_variable_metric <- unique(lookup_variables$variable_metric)
 # ========================================================== -----
