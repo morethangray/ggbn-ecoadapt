@@ -34,6 +34,7 @@ colors_metrics_2  <- c("#2d77a7",  ## DJF
 # ========================================================== -----
 
 # PLOT THEMES ----
+#   theme_bcm_abundance_by_variable ----
 theme_bcm_abundance_by_variable <- function(){
   theme_minimal() +
     theme( 
@@ -70,7 +71,7 @@ theme_bcm_abundance_by_variable <- function(){
       # legend.spacing.y = unit(0.5, 'cm')
       
 }
-
+#   theme_bcm_abundance_by_variable_metric_stacked ----
 theme_bcm_abundance_by_variable_metric_stacked <- function(){
   theme_minimal() +
     theme( 

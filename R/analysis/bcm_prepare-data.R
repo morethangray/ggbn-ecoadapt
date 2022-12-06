@@ -71,14 +71,15 @@ bcm_tidy <- read_csv(here(path_derived, "bcm_raster-to-point_long.csv"))
 #   bcm_variable_change ----
 bcm_variable_change <- 
   bcm_tidy %>%
-  group_by(variable_metric, 
+  # Exclude points that lack data 
+  drop_na(value) %>%
+  group_by(point_id,
+           variable_metric, 
            variable,
            metric,
-           time_end, # Separates historic from future values
-           point_id) %>%
-  # Some points lack data for cwd so min will be infinite
-  drop_na(value) %>%
-  # Find the minimum value at each point
+           # Include time_end to separate historic, future values
+           time_end) %>%  
+  # Find the minimum value at each point among the three futures
   summarize(value_minimum = min(value, na.rm = TRUE)) %>%
   ungroup() %>%
   # Find the difference between the historic and future minimums
@@ -93,7 +94,7 @@ bcm_variable_change <-
            future_minimum_difference)
 
 bcm_variable_change %>%
-  write_csv(here(path_derived, "future-minimum_variable-average_change_all.csv"))
+  write_csv(here(path_derived, "future-minimum_variable_change_all.csv"))
 
  
 # Determine variable average (by bin) across all scenarios  ----
@@ -103,7 +104,7 @@ bcm_variable_change %>%
 #   Study area comprised of 92785 points (= total points)
 
 # bcm_variable_change <-
-#   read_csv(here(path_derived, "future-minimum_variable-average_change.csv"))
+#   read_csv(here(path_derived, "future-minimum_variable_change_all.csv"))
 
 variable_bins_tmp <- 
   fxn_bin_by_variable(index_data = bcm_variable_change, 
@@ -118,7 +119,7 @@ variable_bins_ppt <-
 variable_bins <- 
   bind_rows(variable_bins_tmp, 
             variable_bins_ppt) %>%
-  write_csv(here(path_derived, "future-minimum_variable-average_bin-0.025_tmp-ppt.csv"))
+  write_csv(here(path_derived, "future-minimum_variable_bin-0.025_tmp-ppt.csv"))
 
 # Calculate abundance by bin ----
 variable_bins_abundance_tmp <-
@@ -131,7 +132,7 @@ variable_bins_abundance_ppt <-
 variable_bins_abundance <- 
   bind_rows(variable_bins_abundance_tmp, 
             variable_bins_abundance_ppt) %>%
-  write_csv(here(path_derived, "future-minimum_variable-average_bin-0.025_abundance_tmp-ppt.csv"))
+  write_csv(here(path_derived, "future-minimum_variable_bin-0.025_abundance_tmp-ppt.csv"))
 
 # ========================================================== -----
 # EVALUATE FUTURE CHANGE: BY VARIABLE_METRIC ----
@@ -154,18 +155,18 @@ bcm_variable_metric_change <-
          metric = str_sub(variable_metric, 5, 7))
 
 bcm_variable_metric_change %>%
-  write_csv(here(path_derived, "future-minimum_variable-by-scenario_change_all.csv"))
+  write_csv(here(path_derived, "future-minimum_variable-metric_change_all.csv"))
 
 # Determine variable_metric abundance (by bin) by scenario ----
 # bcm_variable_metric_change <-
-#   read_csv(here(path_derived, "future-minimum_variable-by-scenario_change.csv"))
+#   read_csv(here(path_derived, "future-minimum_variable-metric_change.csv"))
 
 #   variable_metric_bins  -----
 variable_metric_bins <- 
   fxn_bin_by_variable_metric(index_data = bcm_variable_metric_change, 
                              index_list <- list_variable_metric,
                              index_bin_size <- 0.025) %>%
-  write_csv(here(path_derived, "future-minimum_variable-by-scenario_bin-0.025_all.csv"))
+  write_csv(here(path_derived, "future-minimum_variable-metric_bin-0.025_all.csv"))
 
 
 # Calculate abundance by bin ----
@@ -173,7 +174,7 @@ variable_metric_bins <-
 variable_metric_bins_abundance <- 
   fxn_abundance_by_variable_metric(index_data = variable_metric_bins, 
                                    index_list <- list_variable_metric) %>%
-  write_csv(here(path_derived, "future-minimum_variable-by-scenario_bin-0.025_abundance_all.csv"))
+  write_csv(here(path_derived, "future-minimum_variable-metric_bin-0.025_abundance_all.csv"))
 # ========================================================== -----
 # GRAVEYARD ----
 # ---------------------------------------------------------- -----

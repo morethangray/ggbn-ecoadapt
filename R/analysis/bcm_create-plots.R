@@ -15,88 +15,90 @@ source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 # FUTURE CHANGE BY VARIABLE (AVERAGE OF 3 SCENARIOS) ----
 # Create plot showing average of scenarios  
 #   variable_bins -----
-variable_bins <- read_csv(here(path_derived, "future-minimum_variable-average_bin-0.025_tmp-ppt.csv"))
+variable_bins <- 
+  read_csv(here(path_derived, "future-minimum_variable_bin-0.025_tmp-ppt.csv"))  
+  # arrange(variable_metric, bin_from) %>%
+  # mutate_if(is.character, as_factor)
 # Temperature ----
 variable_bins %>%
-  filter(variable %in% "tmp") %>%
-  fxn_plot_abundance_by_variable(index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable(index_variable = "tmp",
+                                 index_path = path_bcm_plot, 
+                                 hide_legend = FALSE)
 
 # Precipitation ----
 variable_bins %>%
-  filter(variable %in% "ppt") %>%
-  fxn_plot_abundance_by_variable(index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable(index_variable = "ppt",
+                                 index_path = path_bcm_plot, 
+                                 hide_legend = FALSE)
 
 # ========================================================== -----
 # FUTURE CHANGE BY VARIABLE_METRIC (BY SCENARIO) ----
 # Create plots showing abundance by scenario  
 #   variable_metric_bins ----- 
 variable_metric_bins <- 
-  read_csv(here(path_derived, "future-minimum_variable-by-scenario_bin-0.025_all.csv"))
+  read_csv(here(path_derived, "future-minimum_variable-metric_bin-0.025_all.csv")) 
+  # arrange(scenario, variable_metric, bin_from) %>%
+  # mutate_if(is.character, as_factor)
 
 
 # Temperature ----
 #   Single plots ----
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_avg", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_avg", 
+                                        index_path = path_bcm_plot, 
+                                        hide_legend = FALSE)
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_djf", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_djf", 
+                                        index_path = path_bcm_plot, 
+                                        hide_legend = FALSE)
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_jja", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric(index_variable_metric = "tmp_jja", 
+                                        index_path = path_bcm_plot, 
+                                        hide_legend = FALSE)
 #   Stacked plot ----
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric_facet(index_variable = "tmp", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric_facet(index_variable = "tmp",
+                                              index_path = path_bcm_plot, 
+                                              hide_legend = TRUE)
 
 # Precipitation  ----
 #   Single plots ----
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "ppt_djf", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric(index_variable_metric = "ppt_djf", 
+                                        index_path = path_bcm_plot, 
+                                        hide_legend = FALSE)
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "ppt_jja", index_path = path_bcm_plot)
+  fxn_plot_abundance_by_variable_metric(index_variable_metric = "ppt_jja", 
+                                        index_path = path_bcm_plot, 
+                                        hide_legend = FALSE)
 #   Stacked plot ----
 variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric_facet(index_variable = "ppt", index_path = path_bcm_plot)
-
+  fxn_plot_abundance_by_variable_metric_facet(index_variable = "ppt", 
+                                              index_path = path_bcm_plot, 
+                                              hide_legend = TRUE)
+# ---------------------------------------------------------- -----
+# [NOT RUN] ----
 # Climatic water deficit  ----
-variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "cwd_avg", index_path = path_bcm_plot)
-
-# Recharge and runoff  ----
-variable_metric_bins %>%
-  fxn_plot_abundance_by_variable_metric(index_variable_metric = "rnr_avg", index_path = path_bcm_plot)
+# variable_metric_bins %>%
+#   fxn_plot_abundance_by_variable_metric(index_variable_metric = "cwd_avg", 
+#                                         index_path = path_bcm_plot, 
+#                                         hide_legend = FALSE)
+# 
+# Recharge  ----
+# variable_metric_bins %>%
+#   fxn_plot_abundance_by_variable_metric(index_variable_metric = "rch_avg",
+#                                         index_path = path_bcm_plot, 
+#                                         hide_legend = FALSE)
+# 
+# Runoff  ----
+# variable_metric_bins %>%
+#   fxn_plot_abundance_by_variable_metric(index_variable_metric = "run_avg",
+#                                         index_path = path_bcm_plot, 
+#                                         hide_legend = FALSE)
 
 
 # ========================================================== -----
 # HEADING ----
-# ========================================================== -----
-# ========================================================== -----
-# Other plots  ----
-# Density plot by variable
-join_compare %>%
-  filter(metric %in% "temp") %>%
-  # filter(check > 0.5 | check < -0.5) %>%
-  select(variable, 
-         point_id, 
-         future_min_diff, 
-         future_min_diff_orig)  %>%
-  gather(calculation, value, future_min_diff:future_min_diff_orig) %>%
-  ggdensity(x = "value",
-            color = "variable") +
-  facet_wrap(~calculation)
-
-# Histogram bu variable
-join_compare %>%
-  filter(metric %in% "temp") %>%
-  filter(check > 0.5 | check < -0.5) %>%
-  select(variable, 
-         point_id, 
-         check) %>%
-  gghistogram(x = "check",
-              color = "variable")  + 
-  facet_wrap(~variable)
-
-
-# FOR REFERENCE: 
-
 # ========================================================== -----
 # GRAVEYARD ----
 # ---------------------------------------------------------- -----

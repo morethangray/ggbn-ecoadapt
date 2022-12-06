@@ -1,8 +1,8 @@
 # updated: 2022-12-05 ----
 # ========================================================== -----
-# FUTURE CHANGE ----
-# By variable ----
-# Determine variable average across all scenarios  
+# BY VARIABLE ---- 
+# Calculate minimum future change  ----
+# For each variable (e.g., tmp, ppt), identify the point-level minimum change among the future scenarios 
 #   Use the difference between the historic and future minimum as input 
 #   Bin values and count the number of points per bin
 #   Abundance is the percent of total points within each bin 
@@ -54,55 +54,6 @@ fxn_bin_by_variable <- function(index_data, index_variable, index_bin_size){
     left_join(bin_annotation, "bin") 
   
 }
-#   fxn_plot_abundance_by_variable -----
-fxn_plot_abundance_by_variable <- function(index_data, index_path){
-  
-  index_variable <- unique(index_data$variable)
-  
-  plot <- 
-    index_data %>%
-    arrange(metric) %>%
-    mutate(Metric = 
-             case_when(
-               metric == "avg" ~ "Annual average (AVG)", 
-               metric == "djf" ~ "Winter minimum (DJF)", 
-               metric == "jja" ~ "Summer maximum (JJA)")
-    ) %>%
-    ggdensity(x = "bin_from",
-              color = "Metric", 
-              fill = NA, 
-              size = 1,
-              ylab = "Density") +
-    theme_bcm_abundance_by_variable() +
-    theme(legend.position = "none") + 
-    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5)
-  
-  # Add inset legend?
-  
-  if(index_variable %in% "tmp"){
-    
-    plot + 
-      scale_color_manual(values = colors_metrics_3) + 
-      xlab("Minimum change in temperature (C)") 
-    
-  }else{
-    
-    plot +
-      scale_color_manual(values = colors_metrics_2) +
-      xlab("Minimum change in precipitation (mm)")  
-  }
-  
-  ggsave(here(index_path, 
-              paste0("future-change_",
-                     index_variable, 
-                     "-average_", 
-                     Sys.Date(),
-                     ".png")), 
-         width = 10.5,
-         height = 3.5, 
-         units = "in",
-         dpi = 300)
-}
 #   fxn_abundance_by_variable -----
 # index_data <- bin_by_variable_tmp
 fxn_abundance_by_variable <- function(index_data){
@@ -146,8 +97,85 @@ fxn_abundance_by_variable <- function(index_data){
              bin_size,
              variable)
 }
+# Create plots ----
+#   fxn_plot_abundance_by_variable -----
+# index_data <- variable_bins
+# index_variable <- "ppt"
+# index_path <- path_bcm_plot
+fxn_plot_abundance_by_variable <- function(index_data, index_variable, index_path, hide_legend){
+  
+  subset <- 
+    index_data %>%
+    filter(variable %in% index_variable)
+  
+  lookup <- 
+    lookup_labels_variable %>%
+    filter(variable %in% index_variable) 
+  
+  index_units <- unique(lookup$units)
+  index_variable_label <- unique(lookup$lab_variable)
+  
+  xlab_title <- paste0("Minimum change in ", 
+                       str_to_lower(index_variable_label),
+                       " (", 
+                       index_units, 
+                       ")")
+  
+  # Define palettes for tmp, ppt 
+  if(index_variable %in% "tmp"){
+    index_colors <- colors_metrics_3
+  }else{
+    index_colors <- colors_metrics_2
+  }
+  
+  plot <- 
+    subset %>%
+    left_join(lookup %>%
+                select(metric, lab_metric),
+              "metric") %>%
+    # Use sentence case for label headers that appear in plot 
+    rename(Metric = lab_metric) %>%
+    arrange(metric, bin_from) %>%
+    mutate_if(is.character, as_factor) %>%
+    ggdensity(x = "bin_from",
+              color = "Metric", 
+              fill = NA, 
+              size = 1.5, 
+              ylab = "Density", 
+              xlab = xlab_title) +
+    theme_bcm_abundance_by_variable() +
+    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5) +
+    scale_color_manual(values = index_colors) 
+  
+  if(hide_legend == TRUE){
+    plot +
+      theme(legend.position = "none") 
+  }else{
+    plot
+  }
+  
+  ggsave(here(index_path, 
+              paste0("future-change_",
+                     index_variable, 
+                     "-average_", 
+                     Sys.Date(),
+                     ".png")), 
+         width = 10.5,
+         height = 3.5, 
+         units = "in",
+         dpi = 300)
+  
+  
+  
+}
 # ---------------------------------------------------------- -----
-# By variable_metric ----
+# BY VARIABLE_METRIC  ----
+# Calculate future change  ----
+# For each variable_metric (e.g., tmp_avg, tmp_jja), identify the point-level change from recent values
+#   Bin values and count the number of points per bin
+#   Abundance is the percent of total points within each bin 
+#   Study area comprised of 92785 points (= total points)
+
 #   fxn_bin_by_variable_metric ----
 # Will iterate through all variable_metric and bind
 # index_data <- bcm_change_variable_metric
@@ -211,135 +239,11 @@ fxn_bin_by_variable_metric <- function(index_data, index_list, index_bin_size){
   bind_datalist <- do.call(bind_rows, datalist)
   
 }
-#   fxn_plot_abundance_by_variable_metric -----
-# To create a plot for each variable_metric 
-# index_data = variable_metric_bins
-# index_variable_metric = "tmp_avg"
-# index_path = here(path_bcm, "plots")
-fxn_plot_abundance_by_variable_metric <- function(index_data, index_variable_metric, index_path){
-  
-  subset <- 
-    index_data %>%
-    filter(variable_metric %in% index_variable_metric)
-  
-  index_variable <- unique(subset$variable)
-  
-  lookup <- 
-    lookup_labels_variable %>%
-    unite(variable_metric, c(variable, metric), remove = FALSE) %>%
-    filter(variable_metric %in% index_variable_metric) 
-  
-  index_units <- unique(lookup$units)
-  index_variable_label <- unique(lookup$lab_variable)
-  
-  xlab_title <- paste0("Change in ", 
-                       str_to_lower(index_variable_label),
-                       " (", 
-                       index_units, 
-                       ")")
-  
-  plot_title <- unique(lookup$lab_metric)
-  
-  subset %>%
-    left_join(lookup %>%
-                select(metric, lab_metric),
-              "metric") %>%
-    left_join(lookup_labels_scenario, "scenario") %>%
-    # Use sentence case for label headers that appear in plot 
-    rename(Scenario = lab_scenario,
-           Metric = lab_metric) %>%
-    arrange(metric, scenario) %>%
-    mutate_if(is.character, as_factor) %>%
-    ggdensity(x = "bin_from",
-              color = "Scenario", 
-              fill = NA, 
-              size = 1.5, 
-              title = plot_title,
-              ylab = "Density", 
-              xlab = xlab_title) +
-    theme_bcm_abundance_by_variable_metric_stacked() +
-    theme(legend.position = "none") +
-    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5) +
-    scale_color_manual(values = colors_scenarios_3) 
-  
-  ggsave(here(index_path, 
-              paste0("future-change_",
-                     index_variable_metric, 
-                     "_", 
-                     Sys.Date(),
-                     ".png")), 
-         width = 9,
-         height = 5, 
-         units = "in",
-         dpi = 300)
-  
-}
-
-
-#   fxn_plot_abundance_by_variable_metric_facet -----
-# For variables with multiple metrics, to stack vertically
-# index_data = variable_metric_bins
-# index_variable = "tmp"
-fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variable, index_path){
-  
-  subset <-
-    index_data %>%
-    filter(variable %in% index_variable)
-  
-  lookup <- 
-    lookup_labels_variable %>%
-    filter(variable %in% index_variable)
-  
-  index_units <- unique(lookup$units)
-  index_variable_label <- unique(lookup$lab_variable)
-  
-  xlab_title <- paste0("Change in ", 
-                       str_to_lower(index_variable_label),
-                       " (", 
-                       index_units, 
-                       ")")
-  
-  subset %>%
-    left_join(lookup %>%
-                select(metric, lab_metric),
-              "metric") %>%
-    left_join(lookup_labels_scenario, "scenario") %>%
-    # Use sentence case for label headers that appear in plot 
-    rename(Scenario = lab_scenario,
-           Metric = lab_metric) %>%
-    arrange(metric, scenario) %>%
-    mutate_if(is.character, as_factor) %>%
-    ggdensity(x = "bin_from",
-              color = "Scenario", 
-              fill = NA, 
-              size = 1,
-              ylab = "Density", 
-              xlab = xlab_title) +
-    facet_wrap(~Metric, 
-               ncol = 1, 
-               scales = "fixed") +
-    theme_bcm_abundance_by_variable_metric_stacked() +
-    theme(legend.position = "none") +
-    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5) +
-    scale_color_manual(values = colors_scenarios_3) 
-  
-  ggsave(here(index_path, 
-              paste0("future-change_stacked_",
-                     index_variable, 
-                     "_", 
-                     Sys.Date(),
-                     ".png")), 
-         width = 5.15,
-         height = 7.25, 
-         units = "in",
-         dpi = 300)
-}
 #   fxn_abundance_by_variable_metric ----
 # index_data <- variable_metric_bins
 # index_name <- index_list[1]
 # index_list <- list_variable_metric
 # 
-
 fxn_abundance_by_variable_metric <- function(index_data, index_list){
   
   datalist <- list()
@@ -389,5 +293,145 @@ fxn_abundance_by_variable_metric <- function(index_data, index_list){
   bind_datalist <- do.call(bind_rows, datalist)
 }
 
+
+# Create plots ----
+#   fxn_plot_abundance_by_variable_metric -----
+# To create a plot for each variable_metric 
+# index_data = variable_metric_bins
+# index_variable_metric = "tmp_avg"
+# index_path = here(path_bcm, "plots")
+fxn_plot_abundance_by_variable_metric <- function(index_data, index_variable_metric, index_path, hide_legend){
+  
+  subset <- 
+    index_data %>%
+    filter(variable_metric %in% index_variable_metric)
+  
+  index_variable <- unique(subset$variable)
+  
+  lookup <- 
+    lookup_labels_variable %>%
+    unite(variable_metric, c(variable, metric), remove = FALSE) %>%
+    filter(variable_metric %in% index_variable_metric) 
+  
+  index_units <- unique(lookup$units)
+  index_variable_label <- unique(lookup$lab_variable)
+  
+  xlab_title <- paste0("Change in ", 
+                       str_to_lower(index_variable_label),
+                       " (", 
+                       index_units, 
+                       ")")
+  
+  plot_title <- unique(lookup$lab_metric)
+  
+  plot <- 
+    subset %>%
+    left_join(lookup %>%
+                select(metric, lab_metric),
+              "metric") %>%
+    left_join(lookup_labels_scenario, "scenario") %>%
+    # Use sentence case for label headers that appear in plot 
+    rename(Scenario = lab_scenario,
+           Metric = lab_metric) %>%
+    arrange(metric, scenario) %>%
+    mutate_if(is.character, as_factor) %>%
+    ggdensity(x = "bin_from",
+              color = "Scenario", 
+              fill = NA, 
+              size = 1.5, 
+              title = plot_title,
+              ylab = "Density", 
+              xlab = xlab_title) +
+    theme_bcm_abundance_by_variable_metric_stacked() +
+    # theme(legend.position = "none") +
+    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5) +
+    scale_color_manual(values = colors_scenarios_3) 
+  
+  if(hide_legend == TRUE){
+    plot +
+      theme(legend.position = "none") 
+  }else{
+    plot
+  }
+  
+  ggsave(here(index_path, 
+              paste0("future-change_",
+                     index_variable_metric, 
+                     "_", 
+                     Sys.Date(),
+                     ".png")), 
+         width = 9,
+         height = 5, 
+         units = "in",
+         dpi = 300)
+  
+}
+
+
+#   fxn_plot_abundance_by_variable_metric_facet -----
+# For variables with multiple metrics, to stack vertically
+# index_data = variable_metric_bins
+# index_variable = "tmp"
+fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variable, index_path, hide_legend){
+  
+  subset <-
+    index_data %>%
+    filter(variable %in% index_variable)
+  
+  lookup <- 
+    lookup_labels_variable %>%
+    filter(variable %in% index_variable)
+  
+  index_units <- unique(lookup$units)
+  index_variable_label <- unique(lookup$lab_variable)
+  
+  xlab_title <- paste0("Change in ", 
+                       str_to_lower(index_variable_label),
+                       " (", 
+                       index_units, 
+                       ")")
+  plot <- 
+    subset %>%
+    left_join(lookup %>%
+                select(metric, lab_metric),
+              "metric") %>%
+    left_join(lookup_labels_scenario, "scenario") %>%
+    # Use sentence case for label headers that appear in plot 
+    rename(Scenario = lab_scenario,
+           Metric = lab_metric) %>%
+    arrange(metric, scenario) %>%
+    mutate_if(is.character, as_factor) %>%
+    ggdensity(x = "bin_from",
+              color = "Scenario", 
+              fill = NA, 
+              size = 1,
+              ylab = "Density", 
+              xlab = xlab_title) +
+    facet_wrap(~Metric, 
+               ncol = 1, 
+               scales = "fixed") +
+    theme_bcm_abundance_by_variable_metric_stacked() +
+    # theme(legend.position = "none") +
+    geom_vline(xintercept = 0, linetype = "dotted", linewidth = 0.8, alpha = 0.5) +
+    scale_color_manual(values = colors_scenarios_3) 
+  
+  if(hide_legend == TRUE){
+    plot +
+      theme(legend.position = "none") 
+  }else{
+    plot
+  }
+  
+  ggsave(here(index_path, 
+              paste0("future-change_stacked_",
+                     index_variable, 
+                     "_", 
+                     Sys.Date(),
+                     ".png")), 
+         width = 5.15,
+         height = 7.25, 
+         units = "in",
+         dpi = 300)
+}
 
 # ========================================================== -----
