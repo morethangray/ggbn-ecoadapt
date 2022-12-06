@@ -1,0 +1,11 @@
+variable,statistic,avg,djf,jja,order,comment
+ppt,mean,NA,124.25578924508909,7.180242500716566,1,"minimum future change from historic value, by variable"
+ppt,median,NA,109.89996337890624,6.4999999999999964,2,"minimum future change from historic value, by variable"
+ppt,min,NA,-59.39996337890631,1.899999856948852,3,"minimum future change from historic value, by variable"
+ppt,max,NA,548.099975585938,15.300000667572018,4,"minimum future change from historic value, by variable"
+ppt,count,NA,92785,92785,5,"minimum future change from historic value, by variable"
+tmp,mean,2.209203613660726,0.6066681090108585,2.2345702451564193,1,"minimum future change from historic value, by variable"
+tmp,median,2.30499839782715,0.7000002861022949,2.1490001678466797,2,"minimum future change from historic value, by variable"
+tmp,min,-0.6880006790161204,-4.1999999061226845,-4.45100021362305,3,"minimum future change from historic value, by variable"
+tmp,max,5.09650039672851,2.2999997138977046,13.1063003540039,4,"minimum future change from historic value, by variable"
+tmp,count,92785,92785,92785,5,"minimum future change from historic value, by variable"
