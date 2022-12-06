@@ -40,3 +40,4 @@ vignettes/*.pdf
 input/data-derived/bcm_raster-to-point_long.csv
 input/data-derived/future-minimum_variable-by-scenario_bin-0.025_abundance_all.csv
 input/data-derived/future-minimum_variable-by-scenario_bin-0.025_all.csv
+input/data-derived/future-minimum_variable-metric_bin-0.025_all.csv
