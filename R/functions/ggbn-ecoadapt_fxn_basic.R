@@ -36,8 +36,8 @@ path_derived <- here(path_in, "data-derived")
 
 # For output, excluding initial set of derived data  ----
 path_out <- here("output/")
-path_prep <- here(path_out, "0_prep-data")
-path_explore <- here(path_out, "1_exploration")
+path_explore <- here(path_out, "0_exploration")
+path_prep <- here(path_out, "1_prep-data")
 path_summarize <- here(path_out, "2_summarize")
 path_bcm <- here(path_out, "3_bcm")
 path_bcm_plot <- here(path_bcm, "plots")
