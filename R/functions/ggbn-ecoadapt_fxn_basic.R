@@ -106,6 +106,7 @@ fxn_kable <- function(df){
 }
 
 # GGBN-EcoAdapt functions ----
+#
 # ========================================================== -----
 # CREATE HELPERS ----
 #   lookup_variables  -----
@@ -119,7 +120,6 @@ lookup_variables <-
                 scenario) %>%
   unite(scenario_variable_metric, c(scenario, variable, metric), remove = FALSE) 
 
-
 #   lookup_labels_all  -----
 lookup_labels_all <- 
   read_csv(here(path_lookup, "bcm-variables.csv")) %>%
@@ -130,7 +130,6 @@ lookup_labels_all <-
          time_end, 
          scenario, 
          starts_with("lab"))  
-  
 
 #   lookup_labels_variable  -----
 lookup_labels_variable <- 
@@ -141,7 +140,6 @@ lookup_labels_variable <-
            lab_variable, 
            lab_metric)  
   
-
 #   lookup_labels_scenario -----
 lookup_labels_scenario <- 
   lookup_labels_all %>%
@@ -150,11 +148,8 @@ lookup_labels_scenario <-
            lab_time, 
            lab_scenario)  
   
-
 #   n_points ----
-
 n_points <- 92785
-
 #   list_variable ----
 list_variable <- unique(lookup_variables$variable)
 #   list_variable_metric ----

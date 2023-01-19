@@ -30,9 +30,7 @@ colors_metrics_2  <- c("#2d77a7",  ## DJF
 # colors_scenarios_3_deuter <- c("#34b8a0",  ## CCSM4	
 #                                "#0b9bce",  ## CNRM-CM5
 #                                "#ffbc43")  ## HadGEM2-CC
-
 # ========================================================== -----
-
 # PLOT THEMES ----
 #   theme_bcm_abundance_by_variable ----
 theme_bcm_abundance_by_variable <- function(){

@@ -1,17 +1,19 @@
 # updated: 2022-12-05 ----
 # ========================================================== -----
-# BY VARIABLE ---- 
+# BY VARIABLE (e.g., tmp, ppt) ---- 
 # Calculate minimum future change  ----
 # For each variable (e.g., tmp, ppt), identify the point-level minimum change among the future scenarios 
 #   Use the difference between the historic and future minimum as input 
 #   Bin values and count the number of points per bin
 #   Abundance is the percent of total points within each bin 
 #   Study area comprised of 92785 points (= total points)
+#
 #   fxn_bin_by_variable ----
-# index_data = bcm_change_variable
-# index_variable = "tmp"
-# index_bin_size = 0.025
-fxn_bin_by_variable <- function(index_data, index_variable, index_bin_size){
+# for index_data, use bcm_change_variable
+# start with an index_bin_size of 0.025
+fxn_bin_by_variable <- function(index_data, 
+                                index_variable, 
+                                index_bin_size){
   
   # Subset input data to variable of interest ----
   subset <- 
@@ -55,7 +57,7 @@ fxn_bin_by_variable <- function(index_data, index_variable, index_bin_size){
   
 }
 #   fxn_abundance_by_variable -----
-# index_data <- bin_by_variable_tmp
+# for index_data, use bin_by_variable_tmp
 fxn_abundance_by_variable <- function(index_data){
 
   index_variable <- unique(index_data$variable)
@@ -99,10 +101,13 @@ fxn_abundance_by_variable <- function(index_data){
 }
 # Create plots ----
 #   fxn_plot_abundance_by_variable -----
-# index_data <- variable_bins
-# index_variable <- "ppt"
-# index_path <- path_bcm_plot
-fxn_plot_abundance_by_variable <- function(index_data, index_variable, index_path, hide_legend){
+# for index_data, use variable_bins
+# for index_path, use path_bcm_plot
+# start with hide_legend as TRUE
+fxn_plot_abundance_by_variable <- function(index_data, 
+                                           index_variable, 
+                                           index_path, 
+                                           hide_legend){
   
   subset <- 
     index_data %>%
@@ -169,19 +174,18 @@ fxn_plot_abundance_by_variable <- function(index_data, index_variable, index_pat
   
 }
 # ---------------------------------------------------------- -----
-# BY VARIABLE_METRIC  ----
+# BY VARIABLE_METRIC (e.g., tmp_avg, tmp_jja) ----
 # Calculate future change  ----
 # For each variable_metric (e.g., tmp_avg, tmp_jja), identify the point-level change from recent values
 #   Bin values and count the number of points per bin
 #   Abundance is the percent of total points within each bin 
 #   Study area comprised of 92785 points (= total points)
-
+#   Total points in study area defined as n_points in ggbn-ecoadapt_fxn_basic.R
+#
 #   fxn_bin_by_variable_metric ----
 # Will iterate through all variable_metric and bind
-# index_data <- bcm_change_variable_metric
-# index_list <- list_variable_metric
-# index_name <- index_list[1]
-
+# for index_data, use bcm_change_variable_metric
+# for index_list, use list_variable_metric
 fxn_bin_by_variable_metric <- function(index_data, index_list, index_bin_size){
   
   datalist <- list()
@@ -240,9 +244,8 @@ fxn_bin_by_variable_metric <- function(index_data, index_list, index_bin_size){
   
 }
 #   fxn_abundance_by_variable_metric ----
-# index_data <- variable_metric_bins
-# index_name <- index_list[1]
-# index_list <- list_variable_metric
+# for index_data, use variable_metric_bins
+# for index_list, use list_variable_metric
 # 
 fxn_abundance_by_variable_metric <- function(index_data, index_list){
   
@@ -297,10 +300,12 @@ fxn_abundance_by_variable_metric <- function(index_data, index_list){
 # Create plots ----
 #   fxn_plot_abundance_by_variable_metric -----
 # To create a plot for each variable_metric 
-# index_data = variable_metric_bins
-# index_variable_metric = "tmp_avg"
-# index_path = here(path_bcm, "plots")
-fxn_plot_abundance_by_variable_metric <- function(index_data, index_variable_metric, index_path, hide_legend){
+# for index_data, use variable_metric_bins
+# for index_path, use here(path_bcm, "plots")
+fxn_plot_abundance_by_variable_metric <- function(index_data, 
+                                                  index_variable_metric, 
+                                                  index_path, 
+                                                  hide_legend){
   
   subset <- 
     index_data %>%
@@ -366,13 +371,14 @@ fxn_plot_abundance_by_variable_metric <- function(index_data, index_variable_met
          dpi = 300)
   
 }
-
-
 #   fxn_plot_abundance_by_variable_metric_facet -----
 # For variables with multiple metrics, to stack vertically
-# index_data = variable_metric_bins
-# index_variable = "tmp"
-fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variable, index_path, hide_legend){
+# for index_data, use variable_metric_bins
+# for index_path, use here(path_bcm, "plots")
+fxn_plot_abundance_by_variable_metric_facet <- function(index_data, 
+                                                        index_variable, 
+                                                        index_path,
+                                                        hide_legend){
   
   subset <-
     index_data %>%
@@ -433,5 +439,4 @@ fxn_plot_abundance_by_variable_metric_facet <- function(index_data, index_variab
          units = "in",
          dpi = 300)
 }
-
 # ========================================================== -----
