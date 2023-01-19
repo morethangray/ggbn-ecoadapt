@@ -19,7 +19,7 @@ lookup_order_statistic <- tibble(statistic = c("mean",
                                                "count"), 
                                  order = c(1, 2, 3, 4, 5))
 # ========================================================== -----
-# RAW VALUES  ----
+# SUMMARIZE RAW VALUES  ----
 #   bcm_tidy -----
 bcm_tidy <- read_csv(here(path_derived, "bcm_raster-to-point_long.csv")) 
 
@@ -31,9 +31,7 @@ bcm_tidy %>%
   ungroup()
   
 # The raster files for CWD, RCH, and RUN had 29 empty cells in each future 
-
-
-# Create summary statistics table    ----
+# Create summary statistics table and write as csv   ----
 bcm_tidy %>%
   filter(variable %in% c("tmp", "ppt")) %>%
   drop_na(value) %>%
@@ -53,11 +51,12 @@ bcm_tidy %>%
                  paste0("bcm_summary-statistics_tmp-ppt_",
                         Sys.Date(),
                         ".csv")))
+#
 # ========================================================== -----
-# BY VARIABLE ----
+# SUMMARIZE BY VARIABLE ----
 #   bcm_variable_change -----
 bcm_variable_change <- read_csv(here(path_derived, "future-minimum_variable_change_all.csv"))
-# Create summary statistics table: Future change   ----
+# Create summary statistics table and write as csv: Future change   ----
 bcm_variable_change %>%
   filter(variable %in% c("tmp", "ppt")) %>%
   rename(value = future_minimum_difference) %>%
@@ -79,10 +78,10 @@ bcm_variable_change %>%
                         Sys.Date(),
                         ".csv")))
 # ========================================================== -----
-# BY VARIABLE_METRIC ----
+# SUMMARIZE BY VARIABLE_METRIC ----
 #   bcm_variable_metric_change -----
 bcm_variable_metric_change <- read_csv(here(path_derived, "future-minimum_variable-metric_change_all.csv"))
-# Create summary statistics table: Future change   ----
+# Create summary statistics table and write as csv: Future change   ----
 bcm_variable_metric_change %>%
   filter(variable %in% c("tmp", "ppt")) %>%
   gather(column, value, ccsm_difference:hadg_difference) %>%
@@ -107,10 +106,4 @@ bcm_variable_metric_change %>%
   
 
 # ========================================================== -----
-# HEADING ----
-# ========================================================== -----
 # GRAVEYARD ----
-# ---------------------------------------------------------- -----
-# START WORKING HERE -----
-# ---------------------------------------------------------- -----
-

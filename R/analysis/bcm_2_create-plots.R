@@ -12,13 +12,25 @@ source(file = here(path_fxn, "ggbn-ecoadapt_fxn_bcm.R"))
 source(file = here(path_fxn, "ggbn-ecoadapt_plot-settings.R"))
 
 # ========================================================== -----
-# FUTURE CHANGE BY VARIABLE (AVERAGE OF 3 SCENARIOS) ----
-# Create plot showing average of scenarios  
+# CREATE DATA FRAMES ----
 #   variable_bins -----
+# For plot showing average of scenarios  
 variable_bins <- 
   read_csv(here(path_derived, "future-minimum_variable_bin-0.025_tmp-ppt.csv"))  
-  # arrange(variable_metric, bin_from) %>%
-  # mutate_if(is.character, as_factor)
+# arrange(variable_metric, bin_from) %>%
+# mutate_if(is.character, as_factor)
+#
+#   variable_metric_bins ----- 
+# For plots showing abundance by scenario  
+variable_metric_bins <- 
+  read_csv(here(path_derived, "future-minimum_variable-metric_bin-0.025_all.csv")) 
+# arrange(scenario, variable_metric, bin_from) %>%
+# mutate_if(is.character, as_factor)
+#
+# ========================================================== -----
+# FUTURE CHANGE BY VARIABLE (AVERAGE OF 3 SCENARIOS) ----
+# Create plot showing average of scenarios  
+# Plots are automatically saved to index_path with today's date
 # Temperature ----
 variable_bins %>%
   fxn_plot_abundance_by_variable(index_variable = "tmp",
@@ -34,13 +46,7 @@ variable_bins %>%
 # ========================================================== -----
 # FUTURE CHANGE BY VARIABLE_METRIC (BY SCENARIO) ----
 # Create plots showing abundance by scenario  
-#   variable_metric_bins ----- 
-variable_metric_bins <- 
-  read_csv(here(path_derived, "future-minimum_variable-metric_bin-0.025_all.csv")) 
-  # arrange(scenario, variable_metric, bin_from) %>%
-  # mutate_if(is.character, as_factor)
-
-
+# Plots are automatically saved to index_path with today's date
 # Temperature ----
 #   Single plots ----
 variable_metric_bins %>%
@@ -76,8 +82,7 @@ variable_metric_bins %>%
   fxn_plot_abundance_by_variable_metric_facet(index_variable = "ppt", 
                                               index_path = path_bcm_plot, 
                                               hide_legend = TRUE)
-# ---------------------------------------------------------- -----
-# [NOT RUN] ----
+# [NOT RUN] ------------------------------------------------ -----
 # Climatic water deficit  ----
 # variable_metric_bins %>%
 #   fxn_plot_abundance_by_variable_metric(index_variable_metric = "cwd_avg", 
@@ -98,8 +103,4 @@ variable_metric_bins %>%
 
 
 # ========================================================== -----
-# HEADING ----
-# ========================================================== -----
 # GRAVEYARD ----
-# ---------------------------------------------------------- -----
-
